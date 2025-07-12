@@ -1,15 +1,17 @@
-import 'package:bloodapp/main.dart';
-import 'main.dart'; // Make sure this is your actual home page file
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 class SubmittedDataPage extends StatefulWidget {
+  const SubmittedDataPage({super.key});
   @override
-  _SubmittedDataPageState createState() => _SubmittedDataPageState();
+  SubmittedDataPageState createState() => SubmittedDataPageState();
 }
 
-class _SubmittedDataPageState extends State<SubmittedDataPage> {
+class SubmittedDataPageState extends State<SubmittedDataPage> {
   List<dynamic> submittedData = [];
   bool isLoading = true;
 
@@ -20,29 +22,36 @@ class _SubmittedDataPageState extends State<SubmittedDataPage> {
   }
 
   Future<void> fetchSubmittedData() async {
-    final url = Uri.parse('http://10.124.247.27/bloodapp/get_data.php');
+    final url = Uri.parse('http://localhost/bloodapp/get_data.php');
 
     try {
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-        if (jsonResponse['success'] == true) {
+        final decoded = json.decode(response.body);
+
+        if (decoded is Map && decoded['data'] is List) {
           setState(() {
-            submittedData = jsonResponse['data'];
+            submittedData = decoded['data'];
             isLoading = false;
           });
         } else {
-          print("Server error: ${jsonResponse['message']}");
-          setState(() => isLoading = false);
+          logger.e("Unexpected response format: $decoded");
+          setState(() {
+            isLoading = false;
+          });
         }
       } else {
-        print("Failed to fetch: ${response.statusCode}");
-        setState(() => isLoading = false);
+        logger.e("Failed to fetch data");
+        setState(() {
+          isLoading = false;
+        });
       }
     } catch (e) {
-      print("Exception: $e");
-      setState(() => isLoading = false);
+      logger.e("Error: $e");
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -65,7 +74,7 @@ class _SubmittedDataPageState extends State<SubmittedDataPage> {
               height: 480,
               padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withAlpha(13),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.black, width: 2),
               ),
