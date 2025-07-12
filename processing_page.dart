@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'form_page.dart'; // replace this with the correct path if needed
 
 class ProcessingPage extends StatefulWidget {
+  const ProcessingPage({super.key});
   @override
-  _ProcessingPageState createState() => _ProcessingPageState();
+  ProcessingPageState createState() => ProcessingPageState();
 }
 
-class _ProcessingPageState extends State<ProcessingPage> {
+class ProcessingPageState extends State<ProcessingPage> {
   @override
   void initState() {
     super.initState();
