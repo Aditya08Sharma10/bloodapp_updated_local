@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'submitted.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
+final logger = Logger();
 
 
 void main() => runApp(MyFormInImageApp());
 
 class MyFormInImageApp extends StatelessWidget {
+  const MyFormInImageApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,7 +33,7 @@ class MyFormInImageApp extends StatelessWidget {
                   height: 400,
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 243, 177, 177).withOpacity(0.05),
+                    color: const Color.fromARGB(255, 243, 177, 177).withAlpha(13),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: UserForm(),
@@ -45,11 +48,12 @@ class MyFormInImageApp extends StatelessWidget {
 }
 
 class UserForm extends StatefulWidget {
+  const UserForm({super.key});
   @override
-  _UserFormState createState() => _UserFormState();
+  UserFormState createState() => UserFormState();
 }
 
-class _UserFormState extends State<UserForm> {
+class UserFormState extends State<UserForm> {
   final ScrollController _scrollController = ScrollController();
   final _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
@@ -65,7 +69,7 @@ class _UserFormState extends State<UserForm> {
 
   void _submit() async {
   if (_formKey.currentState!.validate()) {
-    final formattedDob = _dob != null ? DateFormat('yyyy-MM-dd').format(_dob!) : '';
+    final formattedDob = _dob != null ? DateFormat('dd-MM-yyyy').format(_dob!) : '';
 
     setState(() {
       _submittedData = {
@@ -166,9 +170,9 @@ class _UserFormState extends State<UserForm> {
         Theme(
           data: Theme.of(context).copyWith(
             scrollbarTheme: ScrollbarThemeData(
-              thumbColor: MaterialStateProperty.all<Color>(Colors.red),
-              trackColor: MaterialStateProperty.all<Color>(Colors.grey.shade300),
-              thickness: MaterialStateProperty.all<double>(6),
+              thumbColor: WidgetStateProperty.all<Color>(Colors.red),
+              trackColor: WidgetStateProperty.all<Color>(Colors.grey.shade300),
+              thickness: WidgetStateProperty.all<double>(6),
               radius: Radius.circular(6),
             ),
           ),
@@ -340,7 +344,7 @@ Future<void> submitData({
   required String gender,
   required String bloodGroup,
 }) async {
-  const String url = 'http://10.124.247.27/bloodapp/submit_data.php'; // Replace with your actual backend URL
+  const String url = 'http://localhost/bloodapp/submit_data.php'; // Replace with your actual backend URL
 
   try {
     final response = await http.post(
@@ -359,15 +363,15 @@ Future<void> submitData({
 
     if (response.statusCode == 200) {
       if (response.body.trim() == 'success') {
-        print('Data submitted successfully');
+        logger.e('Data submitted successfully');
         // You can show a Snackbar or navigate to another page
       } else {
-        print('Server error: ${response.body}');
+        logger.e('Server error: ${response.body}');
       }
     } else {
-      print('Failed with status code: ${response.statusCode}');
+      logger.e('Failed with status code: ${response.statusCode}');
     }
   } catch (e) {
-    print('Error occurred: $e');
+    logger.e('Error occurred: $e');
   }
 }
