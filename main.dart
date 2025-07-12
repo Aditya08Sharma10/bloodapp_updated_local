@@ -4,6 +4,7 @@ import 'processing_page.dart';
 void main() => runApp(BloodApp());
 
 class BloodApp extends StatelessWidget {
+ const BloodApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,6 +15,7 @@ class BloodApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
